@@ -12,7 +12,7 @@
         <jsp:include page="resources/partialPages/javascript.jsp"></jsp:include>
         <jsp:include page="resources/partialPages/stylesheets.jsp"></jsp:include>
 
-        <title>JSP Page</title>
+        <title>Home</title>
     </head>
     <body>
         <jsp:include page="resources/partialPages/navbar.jsp"></jsp:include>
