@@ -16,48 +16,54 @@ public class Author {
     }
 
     public Author(Integer authorId) {
-        this.authorId = authorId;
+        setAuthorId(authorId);
     }
 
     public Author(Integer authorId, String authorName, Date dateAdded) {
-        this.authorId = authorId;
-        this.authorName = authorName;
-        this.dateAdded = dateAdded;
+        setAuthorId(authorId);
+        setAuthorName(authorName);
+        setDateAdded(dateAdded);
     }
 
-    public Integer getAuthorId() {
+    public final Integer getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(Integer authorId) {
-        this.authorId = authorId;
+    public final void setAuthorId(Integer authorId) {
+        if(authorId != null && authorId > 0){
+            this.authorId = authorId;            
+        }
     }
 
-    public String getAuthorName() {
+    public final String getAuthorName() {
         return authorName;
     }
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public final void setAuthorName(String authorName) {
+        if(authorName != null && authorName.length()>0){
+            this.authorName = authorName;            
+        }
     }
 
-    public Date getDateAdded() {
+    public final Date getDateAdded() {
         return dateAdded;
     }
 
-    public void setDateAdded(Date dateAdded) {
-        this.dateAdded = dateAdded;
+    public final void setDateAdded(Date dateAdded) {
+        if(dateAdded != null){
+            this.dateAdded = dateAdded;            
+        }
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         int hash = 7;
         hash = 59 * hash + Objects.hashCode(this.authorId);
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -72,7 +78,7 @@ public class Author {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "Author{" + "authorId=" + authorId + ", authorName=" + authorName + ", dateAdded=" + dateAdded + '}';
     }
     

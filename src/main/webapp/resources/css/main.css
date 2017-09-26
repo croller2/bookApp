@@ -10,9 +10,31 @@ and open the template in the editor.
 
 body{
     background-image: url("../images/stackedBooks.jpg");
-    background-size: auto;
+        background-size: 100%;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover;    /* Mozilla*/
+    -o-background-size: cover;      /* Opera*/
+    background-size: cover;
 }
 
-wrapper{
-    padding-top: 100px;
+.main{
+    margin-top: 15%;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table{
+    margin: auto;
+    background-color: white;
+    opacity: .8;
+    border-radius: 8px;
+}
+    
+table thead th{
+    padding: 15px;
+    text-align: center;
+}
+table tr td{
+    padding: 15px;
 }
