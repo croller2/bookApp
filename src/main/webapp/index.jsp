@@ -9,12 +9,17 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">        
-        <jsp:include page="resources/partialPages/javascript.jsp"></jsp:include>
-        <jsp:include page="resources/partialPages/stylesheets.jsp"></jsp:include>
+        <jsp:include page="resources/partialPages/scripts.jsp"></jsp:include>
 
         <title>Home</title>
     </head>
     <body>
         <jsp:include page="resources/partialPages/navbar.jsp"></jsp:include>
+        <div class="row main">
+            <div class="text-area col-md-6 col-md-offset-3">
+                <h2 class="text-center">Welcome - ${adminName} to the BookWebApp Admin Portal</h2>
+                <
+            </div>
+        </div>
     </body>
 </html>

@@ -19,15 +19,20 @@ body{
 
 .main{
     margin-top: 15%;
-    width: 100%;
+    width: inherit;
     margin-left: auto;
     margin-right: auto;
+    border-radius: 8px;
 }
-
+.text-area{
+    background-color: white;
+    opacity: .8;
+    border-radius: 8px;
+}
 table{
     margin: auto;
     background-color: white;
-    opacity: .8;
+
     border-radius: 8px;
 }
     
