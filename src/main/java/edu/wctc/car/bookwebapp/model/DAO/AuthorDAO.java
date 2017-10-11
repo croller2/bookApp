@@ -152,24 +152,30 @@ public class AuthorDAO implements IAuthorDAO {
     
    @Override
     public final int updateAuthorById(Author author) throws SQLException, ClassNotFoundException {
-        ArrayList<String> columnNames = new ArrayList<>();
-        ArrayList<Object> values = new ArrayList<>();
-        columnNames.add(AUTHOR_NAME);
-        columnNames.add(AUTHOR_DATE);
-        values.add(author.getAuthorName());
-        values.add(author.getDateAdded());
-        return db.updateRecord(AUTHOR_TABLE, columnNames, values, AUTHOR_ID, author.getAuthorId());   
+        int recordsUpdated = 0;
+        if(author != null){
+            ArrayList<String> columnNames = new ArrayList<>();
+            ArrayList<Object> values = new ArrayList<>();
+            columnNames.add(AUTHOR_NAME);
+            columnNames.add(AUTHOR_DATE);
+            values.add(author.getAuthorName());
+            values.add(author.getDateAdded());
+            recordsUpdated = db.updateRecord(AUTHOR_TABLE, columnNames, values, AUTHOR_ID, author.getAuthorId());   
+        }
+        return recordsUpdated;
     }
     
     @Override
     public final void addNewAuthor(Author author) throws SQLException, ClassNotFoundException {
-        ArrayList<String> columnNames = new ArrayList<>();
-        ArrayList<Object> values = new ArrayList<>();
-        columnNames.add(AUTHOR_DATE);
-        columnNames.add(AUTHOR_NAME);
-        values.add(author.getDateAdded());
-        values.add(author.getAuthorName());
-        db.insertNewRecord(AUTHOR_TABLE, columnNames, values);
+        if(author != null){
+            ArrayList<String> columnNames = new ArrayList<>();
+            ArrayList<Object> values = new ArrayList<>();
+            columnNames.add(AUTHOR_DATE);
+            columnNames.add(AUTHOR_NAME);
+            values.add(author.getDateAdded());
+            values.add(author.getAuthorName());
+            db.insertNewRecord(AUTHOR_TABLE, columnNames, values);   
+        }
     }
     
   
