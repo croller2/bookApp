@@ -194,7 +194,7 @@ public class MySqlDataAccess implements IDataAccess {
         openConnection();
         psmt = conn.prepareStatement(sql);
         psmt.setObject(1, id);
-        deletedRecords = psmt.executeUpdate(sql);
+        deletedRecords = psmt.executeUpdate();
         closeConnection();
         return deletedRecords;
     }
@@ -203,7 +203,7 @@ public class MySqlDataAccess implements IDataAccess {
     public final int updateRecord(String tableName, ArrayList<String> columnNames, ArrayList<Object> values, String identifierColumnName, Object identifierValue) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE " + tableName + " SET ";
         int updatedRecords = 0;
-        if(columnNames.size() == values.size()){
+        if(columnNames.size() == values.size() && (tableName != null || tableName != "") && columnNames.size() > 0 && values.size() > 0 ){
             ArrayList<String> joinedValues = new ArrayList<>();
             for(int col = 0; col < columnNames.size() ; col++){
                 joinedValues.add(columnNames.get(col) + " = \"" + values.get(col).toString()+ "\"");
@@ -222,7 +222,7 @@ public class MySqlDataAccess implements IDataAccess {
     @Override
     public final void insertNewRecord(String tableName, ArrayList<String> columnNames, ArrayList<Object> values) throws ClassNotFoundException, SQLException{
         String sql = "INSERT INTO " + tableName + " (";
-        if(columnNames.size() == values.size()){
+        if(columnNames.size() == values.size() && tableName != null && columnNames.size() > 0 && values.size() >0 ){
             for(String col : columnNames){
                 sql += col + ", ";
             }
@@ -250,10 +250,10 @@ public class MySqlDataAccess implements IDataAccess {
         cols.add("author_name");
         ArrayList<Object> values = new ArrayList<>();
         values.add("2017-08-09");
-        values.add("Joseph Heller 3");
+        values.add("Joseph Heller 9");
         
-        dbObject.deleteRecordById("authors", "author_id", 9);
-        //int updatedRecords = dbObject.updateRecord("authors", cols,values, "author_id", 2);
+        dbObject.deleteRecordById("authors", "author_id", new Integer(9));
+        //int updatedRecords = dbObject.updateRecord("authors", cols,values, "author_id", new Integer(9));
         //Map<String, Object> record = dbObject.getRecordById("authors", "author_id", 1);
         dbObject.insertNewRecord("authors", cols, values);
         System.out.println(dbObject.getAllRecords("authors", 0));
