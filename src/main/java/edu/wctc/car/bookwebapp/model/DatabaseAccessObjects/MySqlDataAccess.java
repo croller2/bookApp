@@ -252,7 +252,7 @@ public class MySqlDataAccess implements IDataAccess {
         values.add("2017-08-09");
         values.add("Joseph Heller 3");
         
-        dbObject.deleteRecordById("authors", "author_id", 8);
+        dbObject.deleteRecordById("authors", "author_id", 9);
         //int updatedRecords = dbObject.updateRecord("authors", cols,values, "author_id", 2);
         //Map<String, Object> record = dbObject.getRecordById("authors", "author_id", 1);
         dbObject.insertNewRecord("authors", cols, values);
