@@ -9,6 +9,10 @@ import edu.wctc.car.bookwebapp.model.Author;
 import edu.wctc.car.bookwebapp.model.DatabaseAccessObjects.IDataAccess;
 import edu.wctc.car.bookwebapp.model.DatabaseAccessObjects.MySqlDataAccess;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +28,11 @@ public class AuthorDAO implements IAuthorDAO {
     private String password;
     private String userName;
     private IDataAccess db;
-    
+    private final String AUTHOR_TABLE = "authors";
+    private final String AUTHOR_NAME = "author_name";
+    private final String AUTHOR_DATE = "author_date";
+    private final String AUTHOR_ID = "author_id";
+            
     public AuthorDAO(
             String driverClass, String url, 
             String userName, String password, 
@@ -96,27 +104,37 @@ public class AuthorDAO implements IAuthorDAO {
     }
     
     @Override
-    public Author getAuthorById(int id) throws SQLException, ClassNotFoundException{
+    public final Author getAuthorById(int id) throws SQLException, ClassNotFoundException{
         Author author = null;
-        Map<String,Object> record = db.getRecordById("author", "author_id", id);
+        Map<String,Object> record = db.getRecordById(AUTHOR_TABLE, AUTHOR_ID, id);
         if(!record.isEmpty()){
             author = new Author();
-            author.setAuthorId(Integer.parseInt(record.get("author_id").toString()));
-            author.setDateAdded((Date)record.get("author_date"));
-            author.setAuthorName(record.get("author_name").toString());
+            author.setAuthorId(Integer.parseInt(record.get(AUTHOR_ID).toString()));
+            author.setDateAdded((Date)record.get(AUTHOR_DATE));
+            author.setAuthorName(record.get(AUTHOR_NAME).toString());
         }
         return new Author();
     }
     @Override
-    public List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException{
+    public final List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException{
         List<Author> authors = new Vector<>();
-        List<Map<String,Object>> rawData = db.getAllRecords("authors", 0);
+        List<Map<String,Object>> rawData = db.getAllRecords(AUTHOR_TABLE, 0);
         Author author = null;
         for(Map<String,Object> rec : rawData){
             author = new Author();
-            author.setAuthorId(Integer.parseInt(rec.get("author_id").toString()));
-            author.setDateAdded((Date)rec.get("author_date"));
-            author.setAuthorName(rec.get("author_name").toString());
+            
+            Object objRecId = rec.get(AUTHOR_ID);
+            Integer recId = objRecId == null ? 0 : Integer.parseInt(objRecId.toString());
+            
+            Object objName = rec.get(AUTHOR_NAME);
+            String authorName = objName == null ? "" : objName.toString();
+            
+            Object objDateAdded = rec.get(AUTHOR_DATE);
+            Date authorDateAdded = objDateAdded == null ? null : (Date)objDateAdded;
+            
+            author.setAuthorId(recId);    
+            author.setDateAdded(authorDateAdded);
+            author.setAuthorName(authorName);
             
             authors.add(author);
         }       
@@ -124,17 +142,52 @@ public class AuthorDAO implements IAuthorDAO {
     }
     
     @Override
-    public void deleteAuthorById(int id) throws SQLException, ClassNotFoundException{
-        db.deleteRecordById("authors", "author_id", id);
+    public final int deleteAuthorById(Integer id) throws SQLException, ClassNotFoundException{
+       if(id == null || id < 1){
+           throw new IllegalArgumentException("id must be an integer greater than 1");
+       }
+       return db.deleteRecordById(AUTHOR_TABLE, AUTHOR_ID, id);
+       
     }
     
+   @Override
+    public final int updateAuthorById(Author author) throws SQLException, ClassNotFoundException {
+        ArrayList<String> columnNames = new ArrayList<>();
+        ArrayList<Object> values = new ArrayList<>();
+        columnNames.add(AUTHOR_NAME);
+        columnNames.add(AUTHOR_DATE);
+        values.add(author.getAuthorName());
+        values.add(author.getDateAdded());
+        return db.updateRecord(AUTHOR_TABLE, columnNames, values, AUTHOR_ID, author.getAuthorId());   
+    }
     
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    @Override
+    public final void addNewAuthor(Author author) throws SQLException, ClassNotFoundException {
+        ArrayList<String> columnNames = new ArrayList<>();
+        ArrayList<Object> values = new ArrayList<>();
+        columnNames.add(AUTHOR_DATE);
+        columnNames.add(AUTHOR_NAME);
+        values.add(author.getDateAdded());
+        values.add(author.getAuthorName());
+        db.insertNewRecord(AUTHOR_TABLE, columnNames, values);
+    }
+    
+  
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, ParseException {
         IDataAccess db = new MySqlDataAccess("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/bookWebApp", "root", "admin");
         AuthorDAO adao = new AuthorDAO("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/bookWebApp", "root", "admin", db);
+        Author author = new Author();
+        author.setAuthorName("Mark Twain 1");
+        Date dateAdded = new Date();
+        DateFormat format = new SimpleDateFormat("MM-dd-YYYY");
+        dateAdded = format.parse("09-09-2017");
+        author.setDateAdded(dateAdded);        
+        adao.addNewAuthor(author);
         List<Author> authorList =  adao.getListOfAuthors();
-        for(Author author : authorList){
-            System.out.println(author);
+        for(Author auth : authorList){
+            System.out.println(auth);
         }
     }
+
+ 
 }

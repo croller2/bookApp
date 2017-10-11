@@ -18,8 +18,41 @@
     <body>
     <jsp:include page="resources/partialPages/navbar.jsp"></jsp:include>
 
-        <div class="container-fluid">
+        <div class="container-fluid">S
             <div class="row main">
+                <div class="col-xs-4 col-xs-offset-4">
+                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addAuthorForm">
+                        Add Author
+                    </button>
+                    <div class="modal fade" id="addAuthorForm" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Add an Author</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="form" action="authorController?action=add" method="POST">
+                                        <div class="form-group">
+                                            <label for="addAuthorName" >Author Name: </label>
+                                            <input type="text" required class="form-control" name="addAuthorName" id="addAuthorName">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="addDateAdded" >Date Added: </label>
+                                            <input type="date" required class="form-control" name="addAuthorDate" id="addAuthorDate">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Add Author</button>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-xs-6 col-xs-offset-3">
                     <table class="table-striped text-center">
                         <thead>
@@ -50,11 +83,11 @@
                                                 <form class="form" action="authorController?action=edit&id=${author.authorId}" method="POST">
                                                     <div class="form-group">
                                                         <label for="authorName" >Author Name: </label>
-                                                        <input type="text" value="${author.authorName}" class="form-control" name="author_${author.authorName}" id="author_${author.authorName}">
+                                                        <input type="text" value="${author.authorName}" class="form-control" name="authorName_${author.authorId}" id="authorName_${author.authorId}">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="dateAdded" >Date Added: </label>
-                                                        <input type="date" value="<fmt:formatDate pattern= "yyyy-MM-dd" value="${author.dateAdded}"/>" class="form-control" name="author_${author.dateAdded}" id="author_${author.dateAdded}">
+                                                        <input type="date" value="<fmt:formatDate pattern= "yyyy-MM-dd" value="${author.dateAdded}"/>" class="form-control" name="authorDate_${author.authorId}" id="authorDate_${author.authorId}">
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Submit Changes</button>
                                                 </form>

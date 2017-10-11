@@ -6,6 +6,7 @@
 package edu.wctc.car.bookwebapp.model.DatabaseAccessObjects;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +31,11 @@ public interface IDataAccess {
 
     Map<String,Object> getRecordById(String tableName, String columnName, int id) throws SQLException, ClassNotFoundException;
     
-    void deleteRecordById(String tableName, String columnName, int id)throws SQLException, ClassNotFoundException;
+    int deleteRecordById(String tableName, String columnName, Object id)throws SQLException, ClassNotFoundException;
+    
+    int updateRecord(String tableName, ArrayList<String> columnNames, ArrayList<Object> values, String identifierColumnName, Object identifierValue )throws SQLException, ClassNotFoundException;
+    
+    void insertNewRecord(String tableName, ArrayList<String> columnNames, ArrayList<Object> values) throws SQLException, ClassNotFoundException;
     
     String getDriverClass();
 

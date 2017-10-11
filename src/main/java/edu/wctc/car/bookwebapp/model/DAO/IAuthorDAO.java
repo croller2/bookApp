@@ -8,7 +8,9 @@ package edu.wctc.car.bookwebapp.model.DAO;
 import edu.wctc.car.bookwebapp.model.Author;
 import edu.wctc.car.bookwebapp.model.DatabaseAccessObjects.IDataAccess;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -24,7 +26,11 @@ public interface IAuthorDAO {
 
     List<Author> getListOfAuthors() throws SQLException, ClassNotFoundException;
     
-    void deleteAuthorById(int id) throws SQLException, ClassNotFoundException;
+    int deleteAuthorById(Integer id) throws SQLException, ClassNotFoundException;
+    
+    int updateAuthorById(Author author) throws SQLException, ClassNotFoundException;
+    
+    void addNewAuthor(Author author) throws SQLException, ClassNotFoundException;
     
     String getPassword();
 

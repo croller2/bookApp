@@ -23,6 +23,16 @@ public class AuthorService {
     public AuthorService(IAuthorDAO adao){
         setAdao(adao);
     }
+    
+    public final IAuthorDAO getAdao() {
+        return adao;
+    }
+    
+    public final void setAdao(IAuthorDAO adao) {
+        if(adao != null){
+            this.adao = adao;            
+        }
+    }
     public final List<Author> getAuthorList() throws SQLException, ClassNotFoundException{
         return adao.getListOfAuthors();
     }
@@ -34,15 +44,12 @@ public class AuthorService {
     public final void deleteAuthor(int id) throws SQLException, ClassNotFoundException{
         adao.deleteAuthorById(id);
     }
-    public final IAuthorDAO getAdao() {
-        return adao;
+        
+    public final void addAuthor(Author newAuthor) throws SQLException, ClassNotFoundException{
+        adao.addNewAuthor(newAuthor);
     }
-
-    public final void setAdao(IAuthorDAO adao) {
-        if(adao != null){
-            this.adao = adao;            
-        }
-
+    public final int updateAuthor(Author updatedAuthor) throws SQLException, ClassNotFoundException{
+        return adao.updateAuthorById(updatedAuthor);
     }
     
     public static void main(String[] args) throws SQLException, ClassNotFoundException {

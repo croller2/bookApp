@@ -44,8 +44,10 @@ public class AuthorController extends HttpServlet {
     private static String RESULT_PAGE = "/authorList.jsp";
     private static String LIST_ACTION = "authorList";
     private static String EDIT = "edit";
+    private static String DELETE = "delete";
     private static String ACTION = "action";
     private static String ERROR_MESSAGE = "errorMessage";
+    private static String ADD = "add";
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -70,6 +72,10 @@ public class AuthorController extends HttpServlet {
                 GetAuthorListPage(request,response);
             }else if(action.equalsIgnoreCase(EDIT)){
                 EditAuthor(request,response);
+            }else if(action.equalsIgnoreCase(DELETE)){
+                DeleteAuthor(request,response);
+            }else if(action.equalsIgnoreCase(ADD)){
+                AddAuthor(request, response);            
             }
         }catch(Exception ex){
             RESULT_PAGE = "/error.jsp";
@@ -130,11 +136,13 @@ public class AuthorController extends HttpServlet {
 
     private void EditAuthor(HttpServletRequest request, HttpServletResponse response) {
         try{
-            Author authorToEdit = as.getAuthorById(Integer.parseInt(request.getParameter("id")));
-            authorToEdit.setAuthorName(request.getParameter("author_" + authorToEdit.getAuthorName()));
+            int authorId = Integer.parseInt(request.getParameter("id"));
+            Author authorToEdit = as.getAuthorById(authorId);
+            authorToEdit.setAuthorName(request.getParameter("authorName_" + authorId));
             DateFormat format = new SimpleDateFormat("MM-dd-yy");
-            Date dateAdded = format.parse(request.getParameter("author_" + authorToEdit.getDateAdded()));
+            Date dateAdded = format.parse(request.getParameter("authorDate_" + authorId ));
             authorToEdit.setDateAdded(dateAdded);
+            as.updateAuthor(authorToEdit);
             RESULT_PAGE = "/authorList.jsp";
             request.setAttribute("authors", RefreshAuthorList());
         }catch(Exception ex){
@@ -149,6 +157,20 @@ public class AuthorController extends HttpServlet {
             request.setAttribute("authors", RefreshAuthorList());
         }catch(Exception ex){
             request.setAttribute(ERROR_MESSAGE, ex.getCause());
+        }
+    }
+    
+    private void AddAuthor(HttpServletRequest request, HttpServletResponse response){
+        try{
+           
+            Author newAuthor = new Author();
+            newAuthor.setAuthorName(request.getParameter("addAuthorName"));
+            DateFormat format = new SimpleDateFormat("MM-dd-YYYY");
+            Date dateAdded = format.parse(request.getParameter("addAuthorDate"));
+            newAuthor.setDateAdded(dateAdded);
+            as.addAuthor(newAuthor);
+        }catch(Exception ex){
+           request.setAttribute(ERROR_MESSAGE, ex.getCause()); 
         }
     }
     private List<Author> RefreshAuthorList() throws SQLException, ClassNotFoundException{
