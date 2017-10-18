@@ -5,6 +5,8 @@
  */
 package edu.wctc.car.bookwebapp.model.DatabaseAccessObjects;
 
+import edu.wctc.car.bookwebapp.model.DatabaseAccessObjects.IDataAccess;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,10 +15,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -79,10 +82,7 @@ public class MySqlDataAccess implements IDataAccess {
 
     @Override
     public final void setPassword(String password) {
-        if(password != null){
-            this.password = password;      
-        }
-
+        this.password = password;
     }
 
     public MySqlDataAccess(String driverClass,
@@ -94,22 +94,15 @@ public class MySqlDataAccess implements IDataAccess {
         setUserName(userName);
         setPassword(password);
     }
-  
-    /**
-     * Opens a connection to the database
-     * @throws ClassNotFoundException
-     * @throws SQLException 
-     */
+    
+    public MySqlDataAccess(){}
+
     @Override
     public final void openConnection() throws ClassNotFoundException, SQLException {
         Class.forName(driverClass);
         conn = DriverManager.getConnection(url, userName, password);
     }
-    
-    /**
-     * Closes the connection to the database if its open
-     * @throws SQLException 
-     */
+
     @Override
     public final void closeConnection() throws SQLException {
         if (conn != null) {
@@ -208,91 +201,46 @@ public class MySqlDataAccess implements IDataAccess {
         return deletedRecords;
     }
     
-    /**
-     * Updates a record based on given tableName and columns and values
-     * @param tableName
-     * @param columnNames
-     * @param values
-     * @param identifierColumnName
-     * @param identifierValue
-     * @return
-     * @throws SQLException
-     * @throws ClassNotFoundException 
-     */
     @Override
     public final int updateRecord(String tableName, ArrayList<String> columnNames, ArrayList<Object> values, String identifierColumnName, Object identifierValue) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE " + tableName + " SET ";
         int updatedRecords = 0;
         if(columnNames.size() == values.size() && (tableName != null || tableName != "") && columnNames.size() > 0 && values.size() > 0 ){
-            
-            StringJoiner sj = new StringJoiner(", ");
-            for(String column : columnNames){
-                sj.add(column + " = ?");
+            ArrayList<String> joinedValues = new ArrayList<>();
+            for(int col = 0; col < columnNames.size() ; col++){
+                joinedValues.add(columnNames.get(col) + " = \"" + values.get(col).toString()+ "\"");
             }
-            
-            sql += sj.toString();
-
-            sql += " WHERE " + identifierColumnName + " = ? ";
+            String updateValues = String.join(",", joinedValues);
+            sql = sql + updateValues + " WHERE " + identifierColumnName + " = " + identifierValue.toString() + "";
             
             openConnection();
-            psmt = conn.prepareStatement(sql);
-            
-            for(int value = 1 ; value <= values.size(); value++){
-                psmt.setObject(value, values.get(value - 1));
-                System.out.println(sql);
-            }
-            psmt.setObject(values.size() + 1,  identifierValue);
-
-            updatedRecords = psmt.executeUpdate();
+            stmt = conn.createStatement();
+            updatedRecords = stmt.executeUpdate(sql);
             closeConnection();
         }
         return updatedRecords;
     }    
    
-    /**
-     * Inserts a new record in the specified table
-     * @param tableName
-     * @param columnNames
-     * @param values
-     * @throws ClassNotFoundException
-     * @throws SQLException 
-     */
     @Override
     public final void insertNewRecord(String tableName, ArrayList<String> columnNames, ArrayList<Object> values) throws ClassNotFoundException, SQLException{
-        String sql = "INSERT INTO " + tableName;
-        if(columnNames.size() == values.size() && tableName != null && columnNames.size() > 0 && values.size() > 0 ){
-            
-            StringJoiner sj = new StringJoiner(", ", " ( ", " ) ");
-            for(String column : columnNames){
-                sj.add(column);
+        String sql = "INSERT INTO " + tableName + " (";
+        if(columnNames.size() == values.size() && tableName != null && columnNames.size() > 0 && values.size() >0 ){
+            for(String col : columnNames){
+                sql += col + ", ";
             }
+            sql = sql.substring(0, sql.length()- 2 )+ ") VALUES (";
             
-            sql += sj.toString();
-            sql += " VALUES ";
-            
-            sj = new StringJoiner(", ", " ( ", " ) ");
             for(Object value : values){
-                sj.add("?");
+                sql += "\'" + value.toString() + "\',";
             }
-            sql += sj.toString();
-               
+            sql = sql.substring(0, sql.length()-1) + ")";
+            
             openConnection();
-            psmt = conn.prepareStatement(sql);
-            for(int value = 1 ; value <= values.size(); value++){
-                psmt.setObject(value, values.get(value - 1));
-                System.out.println(sql);
-            }
-            psmt.executeUpdate();
+            stmt = conn.createStatement();
+            stmt.executeUpdate(sql);
             closeConnection();
         }
     }
-    
-    /**
-     * Main method for testing
-     * @param args
-     * @throws SQLException
-     * @throws ClassNotFoundException 
-     */
     public final static void main(String[] args) throws SQLException, ClassNotFoundException {
         MySqlDataAccess dbObject = new MySqlDataAccess(
                 "com.mysql.jdbc.Driver", 
@@ -304,11 +252,13 @@ public class MySqlDataAccess implements IDataAccess {
         cols.add("author_name");
         ArrayList<Object> values = new ArrayList<>();
         values.add("2017-08-09");
-        values.add("Joseph Heller 17");
+        values.add("Joseph Heller 9");
         
         //dbObject.deleteRecordById("authors", "author_id", new Integer(10));
         Map<String, Object> authorObject = dbObject.getRecordById("authors", "author_id", 7);
         //int updatedRecords = dbObject.updateRecord("authors", cols,values, "author_id", new Integer(6));
+        dbObject.deleteRecordById("authors", "author_id", new Integer(9));
+        //int updatedRecords = dbObject.updateRecord("authors", cols,values, "author_id", new Integer(9));
         //Map<String, Object> record = dbObject.getRecordById("authors", "author_id", 1);
         //dbObject.insertNewRecord("authors", cols, values);
         System.out.println(authorObject);

@@ -28,9 +28,9 @@ public interface IAuthorDAO {
     
     int deleteAuthorById(Integer id) throws SQLException, ClassNotFoundException;
     
-    int updateAuthorById(Author author) throws SQLException, ClassNotFoundException;
+    int updateAuthorById(Map<String,Object> author) throws SQLException, ClassNotFoundException;
     
-    void addNewAuthor(Author author) throws SQLException, ClassNotFoundException;
+    void addNewAuthor(Map<String,Object> author) throws SQLException, ClassNotFoundException;
     
     String getPassword();
 

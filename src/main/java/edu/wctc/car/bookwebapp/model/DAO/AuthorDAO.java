@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -43,6 +44,10 @@ public class AuthorDAO implements IAuthorDAO {
         setUserName(userName);
         setPassword(password);
         this.db = db;
+        db.setDriverClass(driverClass);
+        db.setPassword(password);
+        db.setUrl(url);
+        db.setUserName(userName);
     }
 
     @Override
@@ -186,20 +191,21 @@ public class AuthorDAO implements IAuthorDAO {
      * @throws ClassNotFoundException 
      */
    @Override
-    public final int updateAuthorById(Author author) throws SQLException, ClassNotFoundException {
+    public final int updateAuthorById(Map<String,Object> author) throws SQLException, ClassNotFoundException {
         int recordsUpdated = 0;
-        if(author != null){
+        Map<String,Object> authorValues = author;
+        if(authorValues != null){
             ArrayList<String> columnNames = new ArrayList<>();
             ArrayList<Object> values = new ArrayList<>();
-            if(author.getAuthorName() != null){
-                columnNames.add(AUTHOR_NAME);
-                values.add(author.getAuthorName());   
-            }
-            if(author.getDateAdded() != null){
-                columnNames.add(AUTHOR_DATE);              
-            values.add(author.getDateAdded());    
-            }
-            recordsUpdated = db.updateRecord(AUTHOR_TABLE, columnNames, values, AUTHOR_ID, author.getAuthorId());   
+            if(authorValues.get(AUTHOR_NAME) != null){
+                    values.add(authorValues.get(AUTHOR_NAME));
+                    columnNames.add(AUTHOR_NAME);
+                }
+                if(authorValues.get(AUTHOR_DATE) != null){
+                    columnNames.add(AUTHOR_DATE);              
+                    values.add(authorValues.get(AUTHOR_DATE));    
+                }
+            recordsUpdated = db.updateRecord(AUTHOR_TABLE, columnNames, values, AUTHOR_ID, authorValues.get(AUTHOR_ID));   
         }
         return recordsUpdated;
     }
@@ -210,18 +216,22 @@ public class AuthorDAO implements IAuthorDAO {
      * @throws ClassNotFoundException 
      */
     @Override
-    public final void addNewAuthor(Author author) throws SQLException, ClassNotFoundException {
-        if(author != null){
-            ArrayList<String> columnNames = new ArrayList<>();
-            ArrayList<Object> values = new ArrayList<>();
-            if(author.getAuthorName() != null){
-                columnNames.add(AUTHOR_NAME);
-                values.add(author.getAuthorName());   
-            }
-            if(author.getDateAdded() != null){
-                columnNames.add(AUTHOR_DATE);              
-                values.add(author.getDateAdded());    
-            }
+    public final void addNewAuthor(Map<String,Object> author) throws SQLException, ClassNotFoundException {
+        Map<String,Object> authorValues = author;
+        ArrayList<String> columnNames = new ArrayList<>();
+        ArrayList<Object> values = new ArrayList<>();
+        if(authorValues != null){
+            
+                if(authorValues.get(AUTHOR_NAME) != null){
+                    values.add(authorValues.get(AUTHOR_NAME));
+                    columnNames.add(AUTHOR_NAME);
+                }
+                if(authorValues.get(AUTHOR_DATE) != null){
+                    columnNames.add(AUTHOR_DATE);              
+                    values.add(authorValues.get(AUTHOR_DATE));    
+                }
+            
+
             db.insertNewRecord(AUTHOR_TABLE, columnNames, values);   
         }
     }
@@ -235,14 +245,16 @@ public class AuthorDAO implements IAuthorDAO {
     public static void main(String[] args) throws SQLException, ClassNotFoundException, ParseException {
         IDataAccess db = new MySqlDataAccess("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/bookWebApp", "root", "admin");
         AuthorDAO adao = new AuthorDAO("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/bookWebApp", "root", "admin", db);
-        Author author = adao.getAuthorById(7);
        // author.setAuthorId(11);
        // author.setAuthorName("Mark Twain 15");
        // Date dateAdded = new Date();
        // DateFormat format = new SimpleDateFormat("MM-dd-YYYY");
         //dateAdded = format.parse("09-09-2017");
         //author.setDateAdded(dateAdded);        
-        //adao.updateAuthorById(author);
+        Map<String,Object> author = new HashMap<String,Object>();
+        author.put("author_name", "Hello");
+        author.put("author_id", 20);
+        adao.updateAuthorById(author);
         //adao.deleteAuthorById(19);
         System.out.println(author);
         //List<Author> authorList =  adao.getListOfAuthors();
