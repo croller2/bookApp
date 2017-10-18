@@ -16,8 +16,11 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -34,10 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
     
-    private String driver = "com.mysql.jdbc.Driver";
-    private String url = "jdbc:mysql://localhost:3306/bookWebApp";
-    private String userName = "root";
-    private String password = "admin";
     private IDataAccess db;
     private AuthorService as;
     
@@ -53,6 +52,10 @@ public class AuthorController extends HttpServlet {
     private static String ADD = "add";
     private static String AUTHORS = "authors";
     
+    private String driverClass;
+    private String url;
+    private String username;
+    private String password;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -66,9 +69,9 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        db = new MySqlDataAccess(driver, url, userName, password);
-        IAuthorDAO adao = new AuthorDAO(driver, url, userName, password, db);
-        as = new AuthorService(adao);
+        AuthorService authService = new AuthorService(new
+        AuthorDAO(driverClass,url,username, password, 
+            new MySqlDataAccess(driverClass,url,username, password)));
         
         try{
             String action = request.getParameter(ACTION);
@@ -157,8 +160,10 @@ public class AuthorController extends HttpServlet {
             int authorId = Integer.parseInt(request.getParameter("id"));
             Author authorToEdit = as.getAuthorById(authorId);
             if(authorToEdit != null){
-                authorToEdit.setAuthorName(request.getParameter("authorName_" + request.getParameter("id")));
-                as.updateAuthor(authorToEdit);   
+                Map<String,Object> authorValues = new HashMap<String,Object>();
+                authorValues.put("author_name", request.getParameter("addAuthorName"));
+                authorValues.put("author_id", request.getParameter("id"));
+                as.updateAuthor(authorValues);   
             }
             RESULT_PAGE = AUTHOR_LIST_PAGE;
             request.setAttribute(AUTHORS, refreshAuthorList());
@@ -191,11 +196,14 @@ public class AuthorController extends HttpServlet {
      * @param response 
      */
     private void addAuthor(HttpServletRequest request, HttpServletResponse response){
-        try{  
-            Author newAuthor = new Author();
-            newAuthor.setAuthorName(request.getParameter("addAuthorName"));
-            newAuthor.setDateAdded(new Date());
-            as.addAuthor(newAuthor);
+        try{             
+            Map<String,Object> authorValues = new HashMap<String,Object>();
+            authorValues.put("author_name", request.getParameter("addAuthorName"));
+            authorValues.put("author_date", new Date());
+       
+
+  
+            as.addAuthor(authorValues);
             RESULT_PAGE = AUTHOR_LIST_PAGE;
             request.setAttribute(AUTHORS, refreshAuthorList());
         }catch(Exception ex){
@@ -213,6 +221,17 @@ public class AuthorController extends HttpServlet {
     private List<Author> refreshAuthorList() throws SQLException, ClassNotFoundException{
         return as.getAuthorList();
     }
-            
-        
+    
+    @Override
+    public void init() throws ServletException {
+        driverClass = getServletContext()
+                .getInitParameter("db.driver.class");
+        url = getServletContext()
+                .getInitParameter("db.url");
+        username = getServletContext()
+                .getInitParameter("db.username");
+        password = getServletContext()
+                .getInitParameter("db.password");
+    }
+
 }
