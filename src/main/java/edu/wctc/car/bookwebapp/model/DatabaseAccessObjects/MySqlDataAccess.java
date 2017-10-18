@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.Vector;
 
 /**
@@ -206,38 +207,57 @@ public class MySqlDataAccess implements IDataAccess {
         String sql = "UPDATE " + tableName + " SET ";
         int updatedRecords = 0;
         if(columnNames.size() == values.size() && (tableName != null || tableName != "") && columnNames.size() > 0 && values.size() > 0 ){
-            ArrayList<String> joinedValues = new ArrayList<>();
-            for(int col = 0; col < columnNames.size() ; col++){
-                joinedValues.add(columnNames.get(col) + " = \"" + values.get(col).toString()+ "\"");
+            
+            StringJoiner sj = new StringJoiner(", ");
+            for(String column : columnNames){
+                sj.add(column + " = ?");
             }
-            String updateValues = String.join(",", joinedValues);
-            sql = sql + updateValues + " WHERE " + identifierColumnName + " = " + identifierValue.toString() + "";
+            
+            sql += sj.toString();
+
+            sql += " WHERE " + identifierColumnName + " = ? ";
             
             openConnection();
-            stmt = conn.createStatement();
-            updatedRecords = stmt.executeUpdate(sql);
+            psmt = conn.prepareStatement(sql);
+            
+            for(int value = 1 ; value <= values.size(); value++){
+                psmt.setObject(value, values.get(value - 1));
+                System.out.println(sql);
+            }
+            psmt.setObject(values.size() + 1,  identifierValue);
+
+            updatedRecords = psmt.executeUpdate();
             closeConnection();
         }
         return updatedRecords;
-    }    
+    }      
    
     @Override
     public final void insertNewRecord(String tableName, ArrayList<String> columnNames, ArrayList<Object> values) throws ClassNotFoundException, SQLException{
-        String sql = "INSERT INTO " + tableName + " (";
-        if(columnNames.size() == values.size() && tableName != null && columnNames.size() > 0 && values.size() >0 ){
-            for(String col : columnNames){
-                sql += col + ", ";
-            }
-            sql = sql.substring(0, sql.length()- 2 )+ ") VALUES (";
+        String sql = "INSERT INTO " + tableName;
+        if(columnNames.size() == values.size() && tableName != null && columnNames.size() > 0 && values.size() > 0 ){
             
+            StringJoiner sj = new StringJoiner(", ", " ( ", " ) ");
+            for(String column : columnNames){
+                sj.add(column);
+            }
+            
+            sql += sj.toString();
+            sql += " VALUES ";
+            
+            sj = new StringJoiner(", ", " ( ", " ) ");
             for(Object value : values){
-                sql += "\'" + value.toString() + "\',";
+                sj.add("?");
             }
-            sql = sql.substring(0, sql.length()-1) + ")";
-            
+            sql += sj.toString();
+               
             openConnection();
-            stmt = conn.createStatement();
-            stmt.executeUpdate(sql);
+            psmt = conn.prepareStatement(sql);
+            for(int value = 1 ; value <= values.size(); value++){
+                psmt.setObject(value, values.get(value - 1));
+                System.out.println(sql);
+            }
+            psmt.executeUpdate();
             closeConnection();
         }
     }
