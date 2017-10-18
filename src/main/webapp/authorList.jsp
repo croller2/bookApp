@@ -18,12 +18,10 @@
     <body>
     <jsp:include page="resources/partialPages/navbar.jsp"></jsp:include>
 
-        <div class="container-fluid">S
+        <div class="container-fluid">
             <div class="row main">
-                <div class="col-xs-4 col-xs-offset-4">
-                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addAuthorForm">
-                        Add Author
-                    </button>
+                
+                <div class="col-xs-4 col-xs-offset-4">                   
                     <div class="modal fade" id="addAuthorForm" role="dialog">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -37,10 +35,6 @@
                                             <label for="addAuthorName" >Author Name: </label>
                                             <input type="text" required class="form-control" name="addAuthorName" id="addAuthorName">
                                         </div>
-                                        <div class="form-group">
-                                            <label for="addDateAdded" >Date Added: </label>
-                                            <input type="date" required class="form-control" name="addAuthorDate" id="addAuthorDate">
-                                        </div>
                                         <button type="submit" class="btn btn-primary">Add Author</button>
                                     </form>
                                 </div>
@@ -50,6 +44,7 @@
                             </div>
                         </div>
                     </div>
+                    <h3 class="text-center text-area">Add, Update, & Delete Authors</h3>
                 </div>
             </div>
             <div class="row">
@@ -64,6 +59,7 @@
                                 <th>Delete Author</th>
                             </tr>
                         </thead>
+                        <tbody>
                     <c:forEach var="author" items="${authors}">
                         <tr>
                             <td>${author.authorId}</td>
@@ -84,10 +80,6 @@
                                                     <div class="form-group">
                                                         <label for="authorName" >Author Name: </label>
                                                         <input type="text" value="${author.authorName}" class="form-control" name="authorName_${author.authorId}" id="authorName_${author.authorId}">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="dateAdded" >Date Added: </label>
-                                                        <input type="date" value="<fmt:formatDate pattern= "yyyy-MM-dd" value="${author.dateAdded}"/>" class="form-control" name="authorDate_${author.authorId}" id="authorDate_${author.authorId}">
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Submit Changes</button>
                                                 </form>
@@ -126,7 +118,17 @@
                                 </div>
                             </td>
                         </tr>
-                    </c:forEach>    
+                    </c:forEach>   
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    <button type="button" class="btn btn-primary pull-left" data-toggle="modal" data-target="#addAuthorForm">
+                                        Add Author
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
                 </table>    
             </div>
 

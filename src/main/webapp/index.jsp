@@ -18,7 +18,7 @@
         <div class="row main">
             <div class="text-area col-md-6 col-md-offset-3">
                 <h2 class="text-center">Welcome - ${adminName} to the BookWebApp Admin Portal</h2>
-                <
+                <p class="text-center">To navigate, see the Navbar up top</p>  
             </div>
         </div>
     </body>

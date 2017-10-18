@@ -33,29 +33,71 @@ public class AuthorService {
             this.adao = adao;            
         }
     }
+    /**Gets  a list of authors
+     * 
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException 
+     */
     public final List<Author> getAuthorList() throws SQLException, ClassNotFoundException{
         return adao.getListOfAuthors();
     }
-
+/**
+ * Returns a single author by ID
+ * @param id
+ * @return
+ * @throws SQLException
+ * @throws ClassNotFoundException 
+ */
     public final Author getAuthorById(int id) throws SQLException, ClassNotFoundException{
         return adao.getAuthorById(id);
     }
-    
-    public final void deleteAuthor(int id) throws SQLException, ClassNotFoundException{
-        adao.deleteAuthorById(id);
+    /**
+     * Deletes an author by id
+     * @param id
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException 
+     */
+    public final int deleteAuthor(int id) throws SQLException, ClassNotFoundException{
+        return adao.deleteAuthorById(id);
     }
-        
+    /**
+     * Adds a new author
+     * @param newAuthor
+     * @throws SQLException
+     * @throws ClassNotFoundException 
+     */
     public final void addAuthor(Author newAuthor) throws SQLException, ClassNotFoundException{
+        
+        //Todo: Update to pass parameters not author objects
+        //List of maps 
+        
         adao.addNewAuthor(newAuthor);
     }
+    
+
+    /**
+     * Updates an author 
+     * @param updatedAuthor
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException 
+     */
     public final int updateAuthor(Author updatedAuthor) throws SQLException, ClassNotFoundException{
         return adao.updateAuthorById(updatedAuthor);
     }
-    
+    /**
+     * Class level testing method
+     * @param args
+     * @throws SQLException
+     * @throws ClassNotFoundException 
+     */
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         IDataAccess db = new MySqlDataAccess("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/bookWebApp", "root", "admin");
         AuthorDAO adao = new AuthorDAO("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/bookWebApp", "root", "admin", db);
         AuthorService as = new AuthorService(adao);
+        as.deleteAuthor(20);
         List<Author> authorList = as.getAuthorList();
         for(Author author : authorList){
             System.out.println(author);

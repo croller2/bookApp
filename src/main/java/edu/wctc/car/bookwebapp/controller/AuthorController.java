@@ -41,13 +41,17 @@ public class AuthorController extends HttpServlet {
     private IDataAccess db;
     private AuthorService as;
     
-    private static String RESULT_PAGE = "/authorList.jsp";
+    private static String RESULT_PAGE = "/index.jsp";
+    private static String AUTHOR_LIST_PAGE = "/authorList.jsp";
+    private static String ERROR_PAGE = "/error.jsp";
     private static String LIST_ACTION = "authorList";
     private static String EDIT = "edit";
     private static String DELETE = "delete";
     private static String ACTION = "action";
     private static String ERROR_MESSAGE = "errorMessage";
+    private static String DELETION = "deletionMessage";
     private static String ADD = "add";
+    private static String AUTHORS = "authors";
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -69,16 +73,19 @@ public class AuthorController extends HttpServlet {
         try{
             String action = request.getParameter(ACTION);
             if(action.equalsIgnoreCase(LIST_ACTION)){
-                GetAuthorListPage(request,response);
+                getAuthorListPage(request,response);
             }else if(action.equalsIgnoreCase(EDIT)){
-                EditAuthor(request,response);
+                editAuthor(request,response);
             }else if(action.equalsIgnoreCase(DELETE)){
-                DeleteAuthor(request,response);
+                deleteAuthor(request,response);
             }else if(action.equalsIgnoreCase(ADD)){
-                AddAuthor(request, response);            
+                addAuthor(request, response);            
+            }else{
+                RESULT_PAGE = AUTHOR_LIST_PAGE;
+                request.setAttribute(AUTHORS, refreshAuthorList());
             }
         }catch(Exception ex){
-            RESULT_PAGE = "/error.jsp";
+            RESULT_PAGE = ERROR_PAGE;
             request.setAttribute(ERROR_MESSAGE, ex.getMessage());
         }
         RequestDispatcher view = request.getRequestDispatcher(RESULT_PAGE);
@@ -124,56 +131,86 @@ public class AuthorController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
-    private void GetAuthorListPage(HttpServletRequest request,HttpServletResponse response){
+    /**Returns the author list page
+     * 
+     * @param request
+     * @param response 
+     */
+    private void getAuthorListPage(HttpServletRequest request,HttpServletResponse response){
         try {
-            request.setAttribute("authors", as.getAuthorList());
+            RESULT_PAGE = AUTHOR_LIST_PAGE;
+            request.setAttribute(AUTHORS, as.getAuthorList());
             
         } catch (SQLException | ClassNotFoundException ex) {
             request.setAttribute(ERROR_MESSAGE, ex.getCause());
         }
     }
-
-    private void EditAuthor(HttpServletRequest request, HttpServletResponse response) {
+   
+    /**Edits the author
+     * 
+     * @param request
+     * @param response 
+     */
+    private void editAuthor(HttpServletRequest request, HttpServletResponse response) {
+        //Todo:  Check if author already exists via name
         try{
             int authorId = Integer.parseInt(request.getParameter("id"));
             Author authorToEdit = as.getAuthorById(authorId);
-            authorToEdit.setAuthorName(request.getParameter("authorName_" + authorId));
-            DateFormat format = new SimpleDateFormat("MM-dd-yy");
-            Date dateAdded = format.parse(request.getParameter("authorDate_" + authorId ));
-            authorToEdit.setDateAdded(dateAdded);
-            as.updateAuthor(authorToEdit);
-            RESULT_PAGE = "/authorList.jsp";
-            request.setAttribute("authors", RefreshAuthorList());
+            if(authorToEdit != null){
+                authorToEdit.setAuthorName(request.getParameter("authorName_" + request.getParameter("id")));
+                as.updateAuthor(authorToEdit);   
+            }
+            RESULT_PAGE = AUTHOR_LIST_PAGE;
+            request.setAttribute(AUTHORS, refreshAuthorList());
         }catch(Exception ex){
+            RESULT_PAGE = ERROR_PAGE;
             request.setAttribute(ERROR_MESSAGE, ex.getCause());
         }
     }
     
-    private void DeleteAuthor(HttpServletRequest request, HttpServletResponse response){
+    /**Deletes the author by id
+     * 
+     * @param request
+     * @param response 
+     */
+    private void deleteAuthor(HttpServletRequest request, HttpServletResponse response){
         try{
-            as.deleteAuthor(Integer.parseInt(request.getParameter("id")));
-            RESULT_PAGE = "/authorList.jsp";
-            request.setAttribute("authors", RefreshAuthorList());
+            int recordsDeleted = as.deleteAuthor(Integer.parseInt(request.getParameter("id")));
+            RESULT_PAGE = AUTHOR_LIST_PAGE;
+            request.setAttribute(DELETION , "Record Successfully deleted");
+            request.setAttribute(AUTHORS, refreshAuthorList());
         }catch(Exception ex){
+            RESULT_PAGE = ERROR_PAGE;
             request.setAttribute(ERROR_MESSAGE, ex.getCause());
         }
     }
     
-    private void AddAuthor(HttpServletRequest request, HttpServletResponse response){
-        try{
-           
+    /**Adds a new author
+     * 
+     * @param request
+     * @param response 
+     */
+    private void addAuthor(HttpServletRequest request, HttpServletResponse response){
+        try{  
             Author newAuthor = new Author();
             newAuthor.setAuthorName(request.getParameter("addAuthorName"));
-            DateFormat format = new SimpleDateFormat("MM-dd-YYYY");
-            Date dateAdded = format.parse(request.getParameter("addAuthorDate"));
-            newAuthor.setDateAdded(dateAdded);
+            newAuthor.setDateAdded(new Date());
             as.addAuthor(newAuthor);
+            RESULT_PAGE = AUTHOR_LIST_PAGE;
+            request.setAttribute(AUTHORS, refreshAuthorList());
         }catch(Exception ex){
+            RESULT_PAGE = ERROR_PAGE;
            request.setAttribute(ERROR_MESSAGE, ex.getCause()); 
         }
     }
-    private List<Author> RefreshAuthorList() throws SQLException, ClassNotFoundException{
+   
+    /**Refreshes the author list after CRUD Operations
+     * 
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException 
+     */
+    private List<Author> refreshAuthorList() throws SQLException, ClassNotFoundException{
         return as.getAuthorList();
     }
             

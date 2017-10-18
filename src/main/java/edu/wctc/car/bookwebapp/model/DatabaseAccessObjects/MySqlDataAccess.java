@@ -174,7 +174,7 @@ public class MySqlDataAccess implements IDataAccess {
         openConnection();
         psmt = conn.prepareStatement(sql);
         psmt.setObject(1, id);
-        rs = psmt.executeQuery(sql);
+        rs = psmt.executeQuery();
         ResultSetMetaData rsmd = rs.getMetaData();
         int colCount = rsmd.getColumnCount();
 
@@ -307,10 +307,11 @@ public class MySqlDataAccess implements IDataAccess {
         values.add("Joseph Heller 17");
         
         //dbObject.deleteRecordById("authors", "author_id", new Integer(10));
+        Map<String, Object> authorObject = dbObject.getRecordById("authors", "author_id", 7);
         //int updatedRecords = dbObject.updateRecord("authors", cols,values, "author_id", new Integer(6));
         //Map<String, Object> record = dbObject.getRecordById("authors", "author_id", 1);
-        dbObject.insertNewRecord("authors", cols, values);
-        System.out.println(dbObject.getAllRecords("authors", 0));
+        //dbObject.insertNewRecord("authors", cols, values);
+        System.out.println(authorObject);
         
 
      
