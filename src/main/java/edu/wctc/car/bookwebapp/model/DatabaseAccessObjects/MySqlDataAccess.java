@@ -281,14 +281,6 @@ public class MySqlDataAccess implements IDataAccess {
         //int updatedRecords = dbObject.updateRecord("authors", cols,values, "author_id", new Integer(9));
         //Map<String, Object> record = dbObject.getRecordById("authors", "author_id", 1);
         //dbObject.insertNewRecord("authors", cols, values);
-        System.out.println(authorObject);
-        
-
-     
+        System.out.println(authorObject);    
     }
-
-
-
-
-
 }

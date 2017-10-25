@@ -153,7 +153,8 @@ public class AuthorController extends HttpServlet {
             Author authorToEdit = as.getAuthorById(authorId);
             if(authorToEdit != null){
                 Map<String,Object> authorValues = new HashMap<>();
-                authorValues.put(AUTHOR_NAME, request.getParameter("addAuthorName"));
+                String authorNameParam = "authorName_" + authorToEdit.getAuthorId();
+                authorValues.put(AUTHOR_NAME, request.getParameter(authorNameParam));
                 authorValues.put(AUTHOR_ID, request.getParameter("id"));
                 as.updateAuthor(authorValues);   
             }
