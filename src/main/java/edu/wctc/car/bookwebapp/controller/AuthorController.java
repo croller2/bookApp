@@ -7,14 +7,13 @@ package edu.wctc.car.bookwebapp.controller;
 
 import edu.wctc.car.bookwebapp.model.Author;
 import edu.wctc.car.bookwebapp.model.AuthorService;
-import edu.wctc.car.bookwebapp.model.DAO.AuthorDAO;
-import edu.wctc.car.bookwebapp.model.DatabaseAccessObjects.MySqlDataAccess;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,7 +27,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
-      
+    
+    @EJB
+    private AuthorService as;
     private static String RESULT_PAGE = "/index.jsp";
     private static String AUTHOR_LIST_PAGE = "/authorList.jsp";
     private static String ERROR_PAGE = "/error.jsp";
@@ -62,10 +63,7 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        AuthorService as = new AuthorService(new
-        AuthorDAO(driverClass,url,username, password, 
-            new MySqlDataAccess()));
-        
+         as = new AuthorService();
         try{
             String action = request.getParameter(ACTION);
             if(action.equalsIgnoreCase(LIST_ACTION)){
@@ -173,7 +171,7 @@ public class AuthorController extends HttpServlet {
      */
     private void deleteAuthor(HttpServletRequest request, HttpServletResponse response, AuthorService as){
         try{
-            int recordsDeleted = as.deleteAuthor(Integer.parseInt(request.getParameter("id")));
+            //int recordsDeleted = as.deleteAuthor(Integer.parseInt(request.getParameter("id")));
             RESULT_PAGE = AUTHOR_LIST_PAGE;
             request.setAttribute(DELETION , DELETION_MESSAGE);
             request.setAttribute(AUTHORS, refreshAuthorList(as));
@@ -211,17 +209,4 @@ public class AuthorController extends HttpServlet {
     private List<Author> refreshAuthorList(AuthorService as) throws SQLException, ClassNotFoundException{
         return as.getAuthorList();
     }
-    
-    @Override
-    public void init() throws ServletException {
-        driverClass = getServletContext()
-                .getInitParameter("db.driver.class");
-        url = getServletContext()
-                .getInitParameter("db.url");
-        username = getServletContext()
-                .getInitParameter("db.username");
-        password = getServletContext()
-                .getInitParameter("db.password");
-    }
-
 }
