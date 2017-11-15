@@ -31,25 +31,21 @@ public class AuthorController extends HttpServlet {
     @EJB
     private AuthorService as;
     private static String RESULT_PAGE = "/index.jsp";
-    private static String AUTHOR_LIST_PAGE = "/authorList.jsp";
-    private static String ERROR_PAGE = "/error.jsp";
-    private static String LIST_ACTION = "authorList";
-    private static String EDIT = "edit";
-    private static String DELETE = "delete";
-    private static String ACTION = "action";
-    private static String ERROR_MESSAGE = "errorMessage";
-    private static String DELETION = "deletionMessage";
-    private static String DELETION_MESSAGE = "Record successfully deleted";
-    private static String ADD = "add";
-    private static String AUTHORS = "authors";
-    private static String AUTHOR_NAME = "author_name";
-    private static String AUTHOR_ID = "author_id";
-    private static String AUTHOR_DATE = "author_date";
+    private static final String AUTHOR_LIST_PAGE = "/authorList.jsp";
+    private static final String ERROR_PAGE = "/error.jsp";
+    private static final String LIST_ACTION = "authorList";
+    private static final String EDIT = "edit";
+    private static final String DELETE = "delete";
+    private static final String ACTION = "action";
+    private static final String ERROR_MESSAGE = "errorMessage";
+    private static final String DELETION = "deletionMessage";
+    private static final String DELETION_MESSAGE = "Record successfully deleted";
+    private static final String ADD = "add";
+    private static final String AUTHORS = "authors";
+    private static final String AUTHOR_NAME = "author_name";
+    private static final String AUTHOR_ID = "author_id";
+    private static final String AUTHOR_DATE = "author_date";
     
-    private String driverClass;// = "com.mysql.jdbc.Driver";
-    private String url;// = "jdbc:mysql://localhost:3306/bookWebApp";
-    private String username;// = "root";
-    private String password;// ="admin";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -63,7 +59,6 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-         as = new AuthorService();
         try{
             String action = request.getParameter(ACTION);
             if(action.equalsIgnoreCase(LIST_ACTION)){

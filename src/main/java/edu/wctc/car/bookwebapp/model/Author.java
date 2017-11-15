@@ -3,17 +3,20 @@ package edu.wctc.car.bookwebapp.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import static javax.swing.text.StyleConstants.Size;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -23,6 +26,9 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name="author")
 public class Author implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bookAuthorId")
+    private Set<Book> bookSet;
 
     private static final long serialVersionUID = 1L;
     
@@ -36,7 +42,7 @@ public class Author implements Serializable {
     @Column(name="author_name")
     private String authorName;
     
-    @Column(name="date_added")
+    @Column(name="author_date")
     @Temporal(TemporalType.DATE)
     private Date dateAdded;
 
@@ -108,6 +114,15 @@ public class Author implements Serializable {
     @Override
     public final String toString() {
         return "Author{" + "authorId=" + authorId + ", authorName=" + authorName + ", dateAdded=" + dateAdded + '}';
+    }
+
+    @XmlTransient
+    public Set<Book> getBookSet() {
+        return bookSet;
+    }
+
+    public void setBookSet(Set<Book> bookSet) {
+        this.bookSet = bookSet;
     }
     
     

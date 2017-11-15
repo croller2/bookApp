@@ -10,7 +10,7 @@
     </context-param>
     <context-param>
         <param-name>db.url</param-name>
-        <param-value>jdbc:mysql://localhost:3306/bookWebApp</param-value>
+        <param-value>jdbc:mysql://localhost:3306/bookwebapp</param-value>
     </context-param>
     <context-param>
         <param-name>db.username</param-name>

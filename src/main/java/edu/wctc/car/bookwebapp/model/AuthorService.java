@@ -8,9 +8,9 @@ package edu.wctc.car.bookwebapp.model;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,8 +19,7 @@ import javax.persistence.TypedQuery;
 
 @Stateless
 public class AuthorService implements Serializable {
-    
-    
+
     public AuthorService() {
     }
     
@@ -98,12 +97,18 @@ public class AuthorService implements Serializable {
     }
     /**
      * Adds a new author
-     * @param newAuthor
+     * @param <error>
+     * @param author
      * @throws SQLException
      * @throws ClassNotFoundException 
      */
-    public final void addAuthor(Map<String,Object> newAuthor) throws SQLException, ClassNotFoundException{
-            
+    public final void addAuthor( Map<String,Object> authorValues) throws SQLException, ClassNotFoundException{
+            em.getTransaction().begin();
+            Author a = new Author();
+            a.setAuthorName(authorValues.get("author_name").toString());
+            a.setDateAdded((Date)authorValues.get("author_date"));
+            em.persist(a);
+            em.getTransaction().commit();
     }
     
 
@@ -124,6 +129,4 @@ public class AuthorService implements Serializable {
      * @throws ClassNotFoundException 
      */
 
-    
-    
 }
