@@ -1,9 +1,10 @@
 <%-- 
-    Document   : authorList
-    Created on : Sep 19, 2017, 8:35:48 PM
+    Document   : bookList
+    Created on : Nov 16, 2017, 2:37:55 PM
     Author     : chris.roller
 --%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -13,7 +14,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">        
     <jsp:include page="resources/partialPages/scripts.jsp"></jsp:include>
 
-        <title>Our Authors</title>
+        <title>Our Books</title>
     </head>
     <body>
     <jsp:include page="resources/partialPages/navbar.jsp"></jsp:include>
@@ -22,20 +23,20 @@
             <div class="row main">
                 
                 <div class="col-xs-4 col-xs-offset-4">                   
-                    <div class="modal fade" id="addAuthorForm" role="dialog">
+                    <div class="modal fade" id="addBookForm" role="dialog">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Add an Author</h4>
+                                    <h4 class="modal-title">Add a Book</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <form class="form" action="authorController?action=add" method="POST">
+                                    <form class="form" action="books?action=add" method="POST">
                                         <div class="form-group">
-                                            <label for="addAuthorName" >Author Name: </label>
-                                            <input type="text" required class="form-control" name="addAuthorName" id="addAuthorName">
+                                            <label for="addBookName" >Book Name: </label>
+                                            <input type="text" required class="form-control" name="addBookName" id="addBookName">
                                         </div>
-                                        <button type="submit" class="btn btn-primary">Add Author</button>
+                                        <button type="submit" class="btn btn-primary">Add Book</button>
                                     </form>
                                 </div>
                                 <div class="modal-footer">
@@ -44,42 +45,46 @@
                             </div>
                         </div>
                     </div>
-                    <h3 class="text-center text-area">Add, Update, & Delete Authors</h3>
+                    <h3 class="text-center text-area">Add, Update, & Delete Books</h3>
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-6 col-xs-offset-3">
+                <div class="col-xs-8 col-xs-offset-2">
                     <table class="table-striped text-center">
                         <thead>
                             <tr>
-                                <th>Author ID</th>
-                                <th>Author Name</th>
-                                <th>Date Added</th>
-                                <th>Edit Author</th>
-                                <th>Delete Author</th>
+                                <th>Book ID</th>
+                                <th>Book Name</th>
+                                <th>Book Publish Date</th>
+                                <th>ISBN</th>
+                                <th>Author</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
-                    <c:forEach var="author" items="${authors}">
+                    <c:forEach var="book" items="${books}">
                         <tr>
-                            <td>${author.authorId}</td>
-                            <td>${author.authorName}</td>
-                            <td><fmt:formatDate pattern= "yyyy-MM-dd" value="${author.authorDate}"/></td>
+                            <td>${book.bookId}</td>
+                            <td>${book.bookName}</td>
+                            <td><fmt:formatDate pattern= "yyyy-MM-dd" value="${book.bookPublishDate}"/></td>
+                            <td>${book.bookIsbn}</td>
+                            <td>${book.author.authorName}</td>
                             <td>
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#editAuthor${author.authorId}">Edit</button>
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#editBook${book.bookId}">Edit</button>
 
-                                <div class="modal fade" id="editAuthor${author.authorId}" role="dialog">
+                                <div class="modal fade" id="editBook{book.bookId}" role="dialog">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <button type="button" class="close" data-dismiss="modal">&times;</span></button>
-                                                <h4 class="modal-title">Edit - ${author.authorName}</h4>
+                                                <h4 class="modal-title">Edit - ${book.bookName}</h4>
                                             </div>
                                             <div class="modal-body">
-                                                <form class="form" action="authorController?action=edit&id=${author.authorId}" method="POST">
+                                                <form class="form" action="books?action=edit&id=${book.bookId}" method="POST">
                                                     <div class="form-group">
-                                                        <label for="authorName" >Author Name: </label>
-                                                        <input type="text" value="${author.authorName}" class="form-control" name="authorName_${author.authorId}" id="authorName_${author.authorId}">
+                                                        <label for="bookName" >Book Name: </label>
+                                                        <input type="text" value="${book.bookName}" class="form-control" name="bookName_${book.bookId}" id="bookName_${book.bookId}">
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Submit Changes</button>
                                                 </form>
@@ -93,20 +98,20 @@
                             </td>
                             <td>
                                 <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#deleteAuthor${author.authorId}">
+                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#deleteBook${book.bookId}">
                                     Delete
                                 </button>
                                 <!-- Modal -->
-                                <div class="modal fade" id="deleteAuthor${author.authorId}" role="dialog">
+                                <div class="modal fade" id="deleteBook${book.bookId}" role="dialog">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                <h4 class="modal-title">Delete - ${author.authorName}?</h4>
+                                                <h4 class="modal-title">Delete - ${book.bookName}?</h4>
                                             </div>
                                             <div class="modal-body">
-                                                <h3>Are you sure you want to delete ${author.authorName}?</h3>
-                                                <form class="form-inline" action="authorController?action=delete&id=${author.authorId}" method="POST">
+                                                <h3>Are you sure you want to delete ${book.bookName}?</h3>
+                                                <form class="form-inline" action="books?action=delete&id=${book.bookId}" method="POST">
                                                     <button type="submit" class="btn btn-danger">Delete</button>
                                                 </form>
                                             </div>
@@ -123,8 +128,8 @@
                         <tfoot>
                             <tr>
                                 <td>
-                                    <button type="button" class="btn btn-primary pull-left" data-toggle="modal" data-target="#addAuthorForm">
-                                        Add Author
+                                    <button type="button" class="btn btn-primary pull-left" data-toggle="modal" data-target="#addBookForm">
+                                        Add Book
                                     </button>
                                 </td>
                             </tr>

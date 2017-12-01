@@ -8,6 +8,7 @@ package edu.wctc.car.bookwebapp.model;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -54,8 +55,8 @@ public class Book implements Serializable {
     @Column(name = "book_isbn")
     private String bookIsbn;
     @JoinColumn(name = "book_author_id", referencedColumnName = "author_id")
-    @ManyToOne(optional = false)
-    private Author bookAuthorId;
+    @ManyToOne(cascade= CascadeType.MERGE)
+    private Author author;
 
     public Book() {
     }
@@ -96,12 +97,12 @@ public class Book implements Serializable {
         this.bookIsbn = bookIsbn;
     }
 
-    public Author getBookAuthorId() {
-        return bookAuthorId;
+    public Author getAuthor() {
+        return author;
     }
 
-    public void setBookAuthorId(Author bookAuthorId) {
-        this.bookAuthorId = bookAuthorId;
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
     @Override
