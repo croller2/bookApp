@@ -6,7 +6,7 @@
 package edu.wctc.car.bookwebapp.controller;
 
 import edu.wctc.car.bookwebapp.model.Author;
-import edu.wctc.car.bookwebapp.model.AuthorFacade;
+import edu.wctc.car.bookwebapp.service.AuthorService;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -15,11 +15,14 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -27,9 +30,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
-    
-    @EJB
-    private AuthorFacade af;
+    private AuthorService as;
     private static String RESULT_PAGE = "/index.jsp";
     private static final String AUTHOR_LIST_PAGE = "/authorList.jsp";
     private static final String ERROR_PAGE = "/error.jsp";
@@ -55,6 +56,16 @@ public class AuthorController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
+@Override
+public void init() throws ServletException {
+        // Ask Spring for object to inject
+    ServletContext sctx = getServletContext();
+    WebApplicationContext ctx
+     = WebApplicationContextUtils
+     .getWebApplicationContext(sctx);
+    as = (AuthorService) ctx.getBean("authorService");
+}
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -127,7 +138,7 @@ public class AuthorController extends HttpServlet {
      */
     private void getAuthorListPage(HttpServletRequest request,HttpServletResponse response){
         RESULT_PAGE = AUTHOR_LIST_PAGE;
-        request.setAttribute(AUTHORS, af.findAll());
+        request.setAttribute(AUTHORS, as.findAll());
     }
    
     /**Edits the author
@@ -142,7 +153,7 @@ public class AuthorController extends HttpServlet {
             String authorNameParam = "authorName_" + authorId;
             author.setAuthorId(new Integer(authorId));
             author.setAuthorName(request.getParameter(authorNameParam));
-            af.updateAuthor(author);   
+            as.edit(author);   
            
             RESULT_PAGE = AUTHOR_LIST_PAGE;
             request.setAttribute(AUTHORS, refreshAuthorList());
@@ -159,7 +170,7 @@ public class AuthorController extends HttpServlet {
      */
     private void deleteAuthor(HttpServletRequest request, HttpServletResponse response){
         try{
-            af.deleteAuthor(request.getParameter("id"));
+            as.deleteById(request.getParameter("id"));
             RESULT_PAGE = AUTHOR_LIST_PAGE;
             request.setAttribute(DELETION , DELETION_MESSAGE);
             request.setAttribute(AUTHORS, refreshAuthorList());
@@ -182,7 +193,7 @@ public class AuthorController extends HttpServlet {
             Author a = new Author();
             a.setAuthorName(request.getParameter("addAuthorName"));
             a.setAuthorDate(new Date());
-            af.create(a);
+            as.create(a);
             RESULT_PAGE = AUTHOR_LIST_PAGE;
             request.setAttribute(AUTHORS, refreshAuthorList());
         }catch(ClassNotFoundException | SQLException ex){
@@ -198,6 +209,7 @@ public class AuthorController extends HttpServlet {
      * @throws ClassNotFoundException 
      */
     private List<Author> refreshAuthorList() throws SQLException, ClassNotFoundException{
-        return af.findAll();
+        return as.findAll();
     }
+    
 }

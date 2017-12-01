@@ -6,17 +6,20 @@
 package edu.wctc.car.bookwebapp.controller;
 
 import edu.wctc.car.bookwebapp.model.Book;
-import edu.wctc.car.bookwebapp.model.BookFacade;
+import edu.wctc.car.bookwebapp.service.BookService;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -24,8 +27,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "BookController", urlPatterns = {"/book"})
 public class BookController extends HttpServlet {
-    @EJB
-    private BookFacade bf;
+
+    private BookService bs;
     private static String RESULT_PAGE = "/index.jsp";
     private static final String BOOK_LIST_PAGE = "/bookList.jsp";
     private static final String ERROR_PAGE = "/error.jsp";
@@ -41,6 +44,20 @@ public class BookController extends HttpServlet {
     private static final String BOOK_NAME = "book_name";
     private static final String BOOK_ID = "book_id";
     private static final String BOOK_PUBLISH_DATE = "book_publish_date";
+    
+    
+    
+ @Override
+    public void init() throws ServletException {
+            // Ask Spring for object to inject
+        ServletContext sctx = getServletContext();
+        WebApplicationContext ctx
+         = WebApplicationContextUtils
+         .getWebApplicationContext(sctx);
+        bs = (BookService) ctx.getBean("bookService");
+}
+    
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -49,7 +66,7 @@ public class BookController extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
-     */
+     */ 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -123,7 +140,7 @@ public class BookController extends HttpServlet {
      */
     private void getBookListPage(HttpServletRequest request,HttpServletResponse response){
         RESULT_PAGE = BOOK_LIST_PAGE;
-        request.setAttribute(BOOKS, bf.findAll());
+        request.setAttribute(BOOKS, bs.findAll());
     }
     
         /**Refreshes the author list after CRUD Operations
@@ -133,6 +150,6 @@ public class BookController extends HttpServlet {
      * @throws ClassNotFoundException 
      */
     private List<Book> refreshBookList() throws SQLException, ClassNotFoundException{
-        return bf.findAll();
+        return bs.findAll();
     }
 }
